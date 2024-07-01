@@ -7,7 +7,7 @@ const Index = () => {
   const canvasRef = useRef(null);
   const [center, setCenter] = useState({ x: -0.5, y: 0 });
   const [zoom, setZoom] = useState(200);
-  const [iterations, setIterations] = useState(1000);
+  const [iterations, setIterations] = useState(100);
   const [colorScheme, setColorScheme] = useState("grayscale");
   const [minIter, setMinIter] = useState(0);
   const [maxIter, setMaxIter] = useState(iterations);
@@ -17,6 +17,22 @@ const Index = () => {
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     renderMandelbrotSet(ctx, center, zoom, iterations, colorScheme);
+  }, [center, zoom, iterations, colorScheme]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const canvas = canvasRef.current;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      renderMandelbrotSet(canvas.getContext("2d"), center, zoom, iterations, colorScheme);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, [center, zoom, iterations, colorScheme]);
 
   const renderMandelbrotSet = (ctx, center, zoom, iterations, colorScheme) => {
@@ -79,7 +95,7 @@ const Index = () => {
   const handleReset = () => {
     setCenter({ x: -0.5, y: 0 });
     setZoom(200);
-    setIterations(1000);
+    setIterations(100);
     setColorScheme("grayscale");
   };
 
@@ -94,43 +110,41 @@ const Index = () => {
   };
 
   return (
-    <div className="text-center">
-      <h1 className="text-3xl mb-4">Mandelbrot Explorer</h1>
-      <p className="mb-4">
-        Explore the fascinating Mandelbrot set. Use the controls to zoom in and out, and reset the view.
-      </p>
-      <canvas ref={canvasRef} width={800} height={600} className="border mb-4" onClick={handleCanvasClick}></canvas>
-      <div className="flex justify-center space-x-4 mb-4">
-        <Button onClick={handleZoomIn}>Zoom In</Button>
-        <Button onClick={handleZoomOut}>Zoom Out</Button>
-        <Button onClick={handleReset}>Reset</Button>
-      </div>
-      <div className="flex justify-center space-x-4 mb-4">
-        <div className="flex flex-col items-center">
-          <label htmlFor="iterations-slider" className="mb-2">Iterations: {iterations}</label>
-          <Slider
-            id="iterations-slider"
-            defaultValue={[iterations]}
-            max={2000}
-            step={100}
-            onValueChange={(value) => setIterations(value[0])}
-          />
+    <div className="relative w-full h-full">
+      <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" onClick={handleCanvasClick}></canvas>
+      <div className="absolute top-4 left-4 space-y-4">
+        <div className="flex space-x-4">
+          <Button onClick={handleZoomIn}>Zoom In</Button>
+          <Button onClick={handleZoomOut}>Zoom Out</Button>
+          <Button onClick={handleReset}>Reset</Button>
         </div>
-        <div className="flex flex-col items-center">
-          <label htmlFor="color-scheme-select" className="mb-2">Color Scheme</label>
-          <Select onValueChange={(value) => setColorScheme(value)}>
-            <SelectTrigger id="color-scheme-select" className="w-[180px]">
-              <SelectValue placeholder="Select color scheme" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="grayscale">Grayscale</SelectItem>
-              <SelectItem value="rainbow">Rainbow</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex space-x-4">
+          <div className="flex flex-col items-center">
+            <label htmlFor="iterations-slider" className="mb-2">Iterations: {iterations}</label>
+            <Slider
+              id="iterations-slider"
+              defaultValue={[iterations]}
+              max={2000}
+              step={100}
+              onValueChange={(value) => setIterations(value[0])}
+            />
+          </div>
+          <div className="flex flex-col items-center">
+            <label htmlFor="color-scheme-select" className="mb-2">Color Scheme</label>
+            <Select onValueChange={(value) => setColorScheme(value)}>
+              <SelectTrigger id="color-scheme-select" className="w-[180px]">
+                <SelectValue placeholder="Select color scheme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="grayscale">Grayscale</SelectItem>
+                <SelectItem value="rainbow">Rainbow</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+        <p>Center Coordinates: ({center.x.toFixed(3)}, {center.y.toFixed(3)})</p>
+        <p>Iteration Range: {minIter} - {maxIter}</p>
       </div>
-      <p>Center Coordinates: ({center.x.toFixed(3)}, {center.y.toFixed(3)})</p>
-      <p>Iteration Range: {minIter} - {maxIter}</p>
     </div>
   );
 };
