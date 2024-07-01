@@ -46,6 +46,12 @@ const Index = () => {
   const renderMandelbrotSet = (ctx, center, zoom, iterations, colorScheme) => {
     const width = ctx.canvas.width;
     const height = ctx.canvas.height;
+    // Ensure width and height are valid before creating image data
+    if (width <= 0 || height <= 0) {
+      console.error("Invalid canvas dimensions:", width, height);
+      return;
+    }
+
     const imageData = ctx.createImageData(width, height);
     let localMinIter = iterations;
     let localMaxIter = 0;
