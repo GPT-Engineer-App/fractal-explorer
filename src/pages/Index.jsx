@@ -9,6 +9,8 @@ const Index = () => {
   const [zoom, setZoom] = useState(200);
   const [iterations, setIterations] = useState(1000);
   const [colorScheme, setColorScheme] = useState("grayscale");
+  const [minIter, setMinIter] = useState(0);
+  const [maxIter, setMaxIter] = useState(iterations);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -21,6 +23,8 @@ const Index = () => {
     const width = ctx.canvas.width;
     const height = ctx.canvas.height;
     const imageData = ctx.createImageData(width, height);
+    let localMinIter = iterations;
+    let localMaxIter = 0;
 
     for (let x = 0; x < width; x++) {
       for (let y = 0; y < height; y++) {
@@ -35,23 +39,27 @@ const Index = () => {
           zx = tmp;
           i--;
         }
+        if (i < localMinIter) localMinIter = i;
+        if (i > localMaxIter) localMaxIter = i;
         const pixelIndex = (x + y * width) * 4;
-        const color = getColor(i, iterations, colorScheme);
+        const color = getColor(i, localMinIter, localMaxIter, colorScheme);
         imageData.data[pixelIndex] = color.r;
         imageData.data[pixelIndex + 1] = color.g;
         imageData.data[pixelIndex + 2] = color.b;
         imageData.data[pixelIndex + 3] = 255;
       }
     }
+    setMinIter(localMinIter);
+    setMaxIter(localMaxIter);
     ctx.putImageData(imageData, 0, 0);
   };
 
-  const getColor = (i, maxIter, scheme) => {
+  const getColor = (i, minIter, maxIter, scheme) => {
     if (scheme === "grayscale") {
-      const color = i === 0 ? 0 : 255 - (i * 255) / maxIter;
+      const color = i === 0 ? 0 : 255 - ((i - minIter) * 255) / (maxIter - minIter);
       return { r: color, g: color, b: color };
     } else if (scheme === "rainbow") {
-      const ratio = i / maxIter;
+      const ratio = (i - minIter) / (maxIter - minIter);
       const r = Math.floor(255 * ratio);
       const g = Math.floor(255 * (1 - ratio));
       const b = Math.floor(255 * (ratio * (1 - ratio)));
@@ -67,6 +75,7 @@ const Index = () => {
   const handleZoomOut = () => {
     setZoom(zoom / 1.5);
   };
+
   const handleReset = () => {
     setCenter({ x: -0.5, y: 0 });
     setZoom(200);
@@ -121,6 +130,7 @@ const Index = () => {
         </div>
       </div>
       <p>Center Coordinates: ({center.x.toFixed(3)}, {center.y.toFixed(3)})</p>
+      <p>Iteration Range: {minIter} - {maxIter}</p>
     </div>
   );
 };
