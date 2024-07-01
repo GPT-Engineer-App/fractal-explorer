@@ -9,7 +9,8 @@ const Index = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    renderMandelbrotSet(ctx, center, zoom);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        renderMandelbrotSet(ctx, center, zoom);
   }, [center, zoom]);
 
   const renderMandelbrotSet = (ctx, center, zoom) => {
@@ -22,10 +23,12 @@ const Index = () => {
       for (let y = 0; y < height; y++) {
         let zx = (x - width / 2) / zoom + center.x;
         let zy = (y - height / 2) / zoom + center.y;
+        let cx = zx;
+        let cy = zy;
         let i = maxIter;
         while (zx * zx + zy * zy < 4 && i > 0) {
-          let tmp = zx * zx - zy * zy + center.x;
-          zy = 2.0 * zx * zy + center.y;
+          let tmp = zx * zx - zy * zy + cx;
+          zy = 2.0 * zx * zy + cy;
           zx = tmp;
           i--;
         }
@@ -40,8 +43,14 @@ const Index = () => {
     ctx.putImageData(imageData, 0, 0);
   };
 
-  const handleZoomIn = () => setZoom(zoom * 1.5);
-  const handleZoomOut = () => setZoom(zoom / 1.5);
+  const handleZoomIn = () => {
+    setCenter({ x: center.x - (canvasRef.current.width / zoom) * 0.5, y: center.y });
+    setZoom(zoom * 1.5);
+  };
+  const handleZoomOut = () => {
+    setCenter({ x: center.x + (canvasRef.current.width / zoom) * 0.5, y: center.y });
+    setZoom(zoom / 1.5);
+  };
   const handleReset = () => {
     setCenter({ x: -0.5, y: 0 });
     setZoom(200);
