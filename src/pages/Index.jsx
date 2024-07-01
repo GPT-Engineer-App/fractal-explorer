@@ -14,17 +14,23 @@ const Index = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    renderMandelbrotSet(ctx, center, zoom, iterations, colorScheme);
-  }, [center, zoom, iterations, colorScheme]);
+    if (canvas) {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      renderMandelbrotSet(ctx, center, zoom, iterations, colorScheme);
+    }
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
       const canvas = canvasRef.current;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      renderMandelbrotSet(canvas.getContext("2d"), center, zoom, iterations, colorScheme);
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        renderMandelbrotSet(canvas.getContext("2d"), center, zoom, iterations, colorScheme);
+      }
     };
 
     window.addEventListener("resize", handleResize);
