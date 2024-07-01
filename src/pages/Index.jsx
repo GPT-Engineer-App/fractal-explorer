@@ -61,11 +61,10 @@ const Index = () => {
   };
 
   const handleZoomIn = () => {
-    setCenter({ x: center.x - (canvasRef.current.width / zoom) * 0.5, y: center.y });
     setZoom(zoom * 1.5);
   };
+
   const handleZoomOut = () => {
-    setCenter({ x: center.x + (canvasRef.current.width / zoom) * 0.5, y: center.y });
     setZoom(zoom / 1.5);
   };
   const handleReset = () => {
@@ -75,13 +74,23 @@ const Index = () => {
     setColorScheme("grayscale");
   };
 
+  const handleCanvasClick = (event) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const newX = (x - canvas.width / 2) / zoom + center.x;
+    const newY = (y - canvas.height / 2) / zoom + center.y;
+    setCenter({ x: newX, y: newY });
+  };
+
   return (
     <div className="text-center">
       <h1 className="text-3xl mb-4">Mandelbrot Explorer</h1>
       <p className="mb-4">
         Explore the fascinating Mandelbrot set. Use the controls to zoom in and out, and reset the view.
       </p>
-      <canvas ref={canvasRef} width={800} height={600} className="border mb-4"></canvas>
+      <canvas ref={canvasRef} width={800} height={600} className="border mb-4" onClick={handleCanvasClick}></canvas>
       <div className="flex justify-center space-x-4 mb-4">
         <Button onClick={handleZoomIn}>Zoom In</Button>
         <Button onClick={handleZoomOut}>Zoom Out</Button>
