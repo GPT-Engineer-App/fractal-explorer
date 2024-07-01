@@ -21,7 +21,7 @@ const Index = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       renderMandelbrotSet(ctx, center, zoom, iterations, colorScheme);
     }
-  }, []);
+  }, [center, zoom, iterations, colorScheme]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -29,7 +29,9 @@ const Index = () => {
       if (canvas) {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        renderMandelbrotSet(canvas.getContext("2d"), center, zoom, iterations, colorScheme);
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        renderMandelbrotSet(ctx, center, zoom, iterations, colorScheme);
       }
     };
 
@@ -113,6 +115,7 @@ const Index = () => {
     const newX = (x - canvas.width / 2) / zoom + center.x;
     const newY = (y - canvas.height / 2) / zoom + center.y;
     setCenter({ x: newX, y: newY });
+    renderMandelbrotSet(canvas.getContext("2d"), { x: newX, y: newY }, zoom, iterations, colorScheme);
   };
 
   return (
