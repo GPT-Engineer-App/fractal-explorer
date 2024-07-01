@@ -120,7 +120,7 @@ const Index = () => {
 
   return (
     <div className="relative w-full h-full">
-      <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" onClick={handleCanvasClick}></canvas>
+      <canvas ref={canvasRef} className="w-full h-full" onClick={handleCanvasClick}></canvas>
       <div className="absolute top-4 left-4 space-y-4">
         <div className="flex space-x-4">
           <Button onClick={handleZoomIn}>Zoom In</Button>
