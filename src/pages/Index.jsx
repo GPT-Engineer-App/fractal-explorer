@@ -100,6 +100,12 @@ const Index = () => {
       const g = Math.floor(128 * (1 - ratio));
       const b = Math.floor(255 * ratio);
       return { r, g, b };
+    } else if (scheme === "ocean") {
+      const ratio = (i - minIter) / (maxIter - minIter);
+      const r = Math.floor(0 * ratio);
+      const g = Math.floor(105 * ratio);
+      const b = Math.floor(255 * (1 - ratio));
+      return { r, g, b };
     }
     return { r: 0, g: 0, b: 0 };
   };
@@ -160,6 +166,7 @@ const Index = () => {
                 <SelectItem value="grayscale">Grayscale</SelectItem>
                 <SelectItem value="rainbow">Rainbow</SelectItem>
                 <SelectItem value="sunset">Sunset</SelectItem>
+                <SelectItem value="ocean">Ocean</SelectItem>
               </SelectContent>
             </Select>
           </div>
