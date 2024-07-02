@@ -94,6 +94,12 @@ const Index = () => {
       const g = Math.floor(255 * (1 - ratio));
       const b = Math.floor(255 * (ratio * (1 - ratio)));
       return { r, g, b };
+    } else if (scheme === "sunset") {
+      const ratio = (i - minIter) / (maxIter - minIter);
+      const r = Math.floor(255 * (1 - ratio));
+      const g = Math.floor(128 * (1 - ratio));
+      const b = Math.floor(255 * ratio);
+      return { r, g, b };
     }
     return { r: 0, g: 0, b: 0 };
   };
@@ -153,6 +159,7 @@ const Index = () => {
               <SelectContent>
                 <SelectItem value="grayscale">Grayscale</SelectItem>
                 <SelectItem value="rainbow">Rainbow</SelectItem>
+                <SelectItem value="sunset">Sunset</SelectItem>
               </SelectContent>
             </Select>
           </div>
